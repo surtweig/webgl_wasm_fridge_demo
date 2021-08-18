@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+    <head>
+        <title>Fridge emulator (Webassembly + WebGL)</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <!--<link rel="stylesheet" href="../oakhill.css" type="text/css"/>-->
+        <link rel="stylesheet" href="game.css?v=2" type="text/css"/>
+        <link rel="shortcut icon" type="image/png" href="../images/icon.png"/>
+        <link rel="icon" type="image/png" href="../images/icon.png"/>
+    </head>
+    
+    <body>
+        <div id="FrameTable">
+            <div id="FrameTableCell">
+                <table id="FrameContent">
+                    <tr>
+                        <td style="text-align:center;vertical-align:middle">
+                            <canvas id="wglframe" width=240 height=160></canvas>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!--
+        <script id="ohg-opaque-v" src="shaders/ohg-opaque.v" type="notjs"></script>
+        <script id="ohg-opaque-f" src="shaders/ohg-opaque.f" type="notjs"></script>
+        <script id="ohg-alpha-cut-v" src="shaders/ohg-alpha-cut.v" type="notjs"></script>
+        <script id="ohg-alpha-cut-f" src="shaders/ohg-alpha-cut.f" type="notjs"></script>
+        -->
+       
+        <script id="ohg-opaque-v" type="notjs">
+        precision highp float;
+        
+        attribute vec2 a_position;
+        attribute vec2 a_texcoord;
+        
+        uniform vec2 u_resolution;
+        uniform mat3 u_matrix;
+        
+        varying vec2 v_texcoord;
+        varying vec2 v_position;
+        
+        void main() {
+          vec2 position = (u_matrix * vec3(a_position, 1)).xy;
+          position = 2.0*position / u_resolution - 1.0;
+        
+          v_texcoord = a_texcoord;
+          v_position = position;
+          gl_Position = vec4(position.x, position.y, 0.0, 1.0);
+        }
+        </script>
+                
+        <script id="ohg-opaque-f" type="notjs">
+        precision highp float;
+        
+        varying vec2 v_texcoord;
+        varying vec2 v_position;
+        
+        uniform vec2 u_resolution;        
+        uniform sampler2D u_texture;
+        
+        void main() {
+           gl_FragColor = texture2D(u_texture, v_texcoord);//vec4(fract(v_texcoord.x), fract(v_texcoord.y), 0.0, 1.0);
+        }
+        </script>  
+        
+        <script id="ohg-color-cut-v" type="notjs">
+        precision highp float;
+        
+        attribute vec2 a_position;
+        attribute vec2 a_texcoord;
+        attribute vec3 a_bgcolor;
+        attribute vec3 a_fgcolor;
+        
+        uniform vec2 u_resolution;
+        uniform mat3 u_matrix;
+        
+        varying vec2 v_texcoord;
+        varying vec2 v_position;
+        varying vec3 v_bgcolor;
+        varying vec3 v_fgcolor;
+        
+        void main() {
+          vec2 position = (u_matrix * vec3(a_position, 1)).xy;
+          position = 2.0*position / u_resolution - 1.0;
+        
+          v_texcoord = a_texcoord;
+          v_position = position;
+          v_bgcolor = a_bgcolor;
+          v_fgcolor = a_fgcolor;
+          gl_Position = vec4(position.x, position.y, 0.0, 1.0);
+        }
+        </script>
+                
+        <script id="ohg-color-cut-f" type="notjs">
+        precision highp float;
+        
+        varying vec2 v_texcoord;
+        varying vec2 v_position;
+        varying vec3 v_bgcolor;
+        varying vec3 v_fgcolor;
+        
+        uniform vec2 u_resolution;        
+        uniform sampler2D u_texture;
+        uniform vec4 u_transparentColor;
+        uniform float u_threshold;
+        
+        void main() {
+           vec4 color = texture2D(u_texture, v_texcoord);//vec4(fract(v_texcoord.x), fract(v_texcoord.y), 0.0, 1.0);
+           //if (length(u_transparentColor - color) <= u_threshold)
+           //   discard;
+           //gl_FragColor = color;
+           //gl_FragColor = vec4(v_fgcolor, 1);
+           gl_FragColor = vec4(mix(v_bgcolor, v_fgcolor, color.r), 1);
+        }
+        </script>        
+        
+        <script src="m3.js"></script>
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+        <script src="ohg.js?v=2"></script>
+        <script src="game.js?v=6"></script>
+    </body>
+</html>

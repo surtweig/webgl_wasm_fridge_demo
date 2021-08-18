@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+
+<script type="module">
+  async function init() {
+    const { instance } = await WebAssembly.instantiateStreaming(
+      fetch("./fridge.wasm")
+    );
+
+   console.log(instance.exports);
+
+   instance.exports.init_fridge();
+  }
+  init();
+</script>

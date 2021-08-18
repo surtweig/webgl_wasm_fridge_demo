@@ -1,0 +1,46 @@
+canvas {
+    width: 960px;
+    height: 640px;
+    image-rendering: pixelated;
+    background-color: rgb(0, 0, 90);
+    
+}
+  
+body, html {
+	height: 100%;
+	background:#000000;
+	font-family:Verdana;
+	font-size: 11px;
+	color:#FFFFFF;
+	overflow:hidden;
+	letter-spacing:0px;
+}
+
+#FrameTable {
+	width: 100%;
+	padding: 0;
+	display: table;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	margin: 0;		
+}
+
+#FrameTableCell {
+	padding: 0;
+	vertical-align: middle;
+	display: table-cell;
+	margin: 0;
+	height:100%;
+}
+
+#FrameContent {
+	max-width: 1150px;
+	max-height: 820px;
+	width:100%;
+	height:100%;
+	background-color: #000000;
+	margin: 0 auto;
+	text-align: right;
+}

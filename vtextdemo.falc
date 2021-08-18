@@ -1,0 +1,59 @@
+include "vtext.inc"
+
+offset 0x0000
+static str1 "                                    "
+static str2 " This is an actual Fridge emulator! "
+
+main vtextdemo
+    MVI A, 1
+    VMODE
+    LXI HL, 0x0000
+    MVI B, 0
+    JMP vtextdemo.loop
+
+
+entry vtextdemo.loop
+    MOV A, B
+    VFSA
+    INX HL
+    INR B
+    
+    MOV A, H
+    CPI 0x07
+    JZ vtextdemo.new_frame
+    JMP vtextdemo.loop
+
+entry vtextdemo.new_frame
+    INR C
+    MOV A, B
+    ADD C
+    MOV B, A
+    LXI HL, 0x0000
+
+    PUSH BC
+    
+    MVI A, 1                  // blue background
+    STA VTEXT_BACK_COLOR    
+    MVI A, 15                 // white letters
+    STA VTEXT_FORE_COLOR    
+    MVI B, 2                  // text position C=row B=column
+    MVI C, 9
+    LXI HL, str2               // Passing the string's address through HL register pair
+    CALL vtext_putstr         // Print the string
+    
+    MVI B, 2                  
+    MVI C, 8
+    LXI HL, str1              
+    CALL vtext_putstr         
+    
+    MVI B, 2                  
+    MVI C, 10
+    LXI HL, str1              
+    CALL vtext_putstr         
+
+    POP BC
+
+    LXI HL, 0x0000
+    VPRE
+    JMP vtextdemo.loop
+
